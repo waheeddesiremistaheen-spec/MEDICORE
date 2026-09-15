@@ -1,0 +1,58 @@
+:root {
+  --navy: #1F3B57;
+  --teal: #3E8E8C;
+  --paper: #F2F5F7;
+
+  --line: rgba(31, 59, 87, 0.12);
+  --muted: rgba(31, 59, 87, 0.65);
+  --shadow: 0 1px 3px rgba(31, 59, 87, 0.08);
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--paper);
+  color: var(--navy);
+  font-size: 15px;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius);
+  padding: 9px 16px;
+  background: var(--teal);
+  color: var(--paper);
+  transition: opacity .15s;
+}
+button:hover { opacity: .88; }
+button.ghost {
+  background: transparent;
+  color: var(--navy);
+  border: 1px solid var(--line);
+}
+button.danger { background: transparent; color: var(--navy); border: 1px solid var(--line); }
+
+input, select, textarea {
+  font: inherit;
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--navy);
+  outline: none;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--teal); }
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}

@@ -1,8 +1,9 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../store';
 
 const links = [
-  ['/', 'Dashboard'],
+  ['/dashboard', 'Dashboard'],
   ['/patients', 'Patients'],
   ['/doctors', 'Doctors'],
   ['/appointments', 'Appointments'],
@@ -10,56 +11,79 @@ const links = [
 ];
 
 export default function Layout() {
-  const { db } = useStore();
+  const { db, session, logout } = useStore();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // close the drawer whenever the route changes
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <aside style={{
-        width: 220,
-        background: 'var(--navy)',
-        color: 'var(--paper)',
-        padding: '24px 16px',
-        flexShrink: 0,
-      }}>
-        <h2 style={{ fontSize: 16, letterSpacing: 1, margin: '0 0 28px 8px' }}>
-          MEDICORE
-        </h2>
+    <div className="app-shell">
+      {/* mobile top bar */}
+      <div className="mobile-bar">
+        <button
+          className="hamburger"
+          aria-label="Open menu"
+          onClick={() => setMenuOpen(true)}
+        >
+          <span /><span /><span />
+        </button>
+        <div className="mobile-brand">MEDICORE</div>
+        <div className="mobile-spacer" />
+      </div>
 
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {menuOpen && (
+        <div className="backdrop" onClick={() => setMenuOpen(false)} />
+      )}
+
+      <aside className={'sidebar' + (menuOpen ? ' open' : '')}>
+        <div className="sidebar-brand">MEDICORE</div>
+
+        <nav className="sidebar-nav">
           {links.map(([to, label]) => (
             <NavLink
               key={to}
               to={to}
-              end={to === '/'}
-              style={({ isActive }) => ({
-                padding: '9px 12px',
-                borderRadius: 6,
-                textDecoration: 'none',
-                fontSize: 14,
-                color: isActive ? 'var(--navy)' : 'var(--paper)',
-                background: isActive ? 'var(--paper)' : 'transparent',
-                opacity: isActive ? 1 : 0.75,
-              })}
+              className={({ isActive }) =>
+                'nav-link' + (isActive ? ' active' : '')
+              }
             >
-              {label}
+              <span>{label}</span>
               {to === '/appointments' && db.appointments.length > 0 && (
-                <span style={{
-                  float: 'right',
-                  background: 'var(--teal)',
-                  color: 'var(--paper)',
-                  borderRadius: 10,
-                  padding: '1px 7px',
-                  fontSize: 11,
-                }}>
-                  {db.appointments.length}
-                </span>
+                <span className="nav-badge">{db.appointments.length}</span>
               )}
             </NavLink>
           ))}
         </nav>
+
+        <div className="sidebar-user">
+          <div className="user-avatar">
+            {(session?.name || 'U').charAt(0).toUpperCase()}
+          </div>
+          <div className="user-info">
+            <div className="user-name">{session?.name}</div>
+            <div className="user-email">{session?.email}</div>
+          </div>
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+            title="Sign out"
+          >
+            Sign out
+          </button>
+        </div>
       </aside>
 
-      <main style={{ flex: 1, padding: 32, maxWidth: 1100 }}>
+      <main className="main">
         <Outlet />
       </main>
     </div>
